@@ -44,6 +44,44 @@ const PhotoStrip = ({ photos, selectedStickers, showDownload = true }: PhotoStri
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, STRIP_WIDTH, STRIP_HEIGHT);
     
+    // Add decorative border around entire strip
+    ctx.strokeStyle = "#FF9AD5"; // Pink border
+    ctx.lineWidth = 8;
+    ctx.strokeRect(10, 10, STRIP_WIDTH - 20, STRIP_HEIGHT - 20);
+    
+    // Add some decorative elements to the corners
+    const cornerSize = 40;
+    
+    // Top left corner
+    ctx.beginPath();
+    ctx.moveTo(10, 30);
+    ctx.lineTo(10, 10);
+    ctx.lineTo(30, 10);
+    ctx.strokeStyle = "#FFD700"; // Gold
+    ctx.lineWidth = 8;
+    ctx.stroke();
+    
+    // Top right corner
+    ctx.beginPath();
+    ctx.moveTo(STRIP_WIDTH - 30, 10);
+    ctx.lineTo(STRIP_WIDTH - 10, 10);
+    ctx.lineTo(STRIP_WIDTH - 10, 30);
+    ctx.stroke();
+    
+    // Bottom left corner
+    ctx.beginPath();
+    ctx.moveTo(10, STRIP_HEIGHT - 30);
+    ctx.lineTo(10, STRIP_HEIGHT - 10);
+    ctx.lineTo(30, STRIP_HEIGHT - 10);
+    ctx.stroke();
+    
+    // Bottom right corner
+    ctx.beginPath();
+    ctx.moveTo(STRIP_WIDTH - 30, STRIP_HEIGHT - 10);
+    ctx.lineTo(STRIP_WIDTH - 10, STRIP_HEIGHT - 10);
+    ctx.lineTo(STRIP_WIDTH - 10, STRIP_HEIGHT - 30);
+    ctx.stroke();
+    
     // Preload all images before drawing
     const loadImage = (src: string): Promise<HTMLImageElement> => {
       return new Promise((resolve, reject) => {
@@ -77,35 +115,75 @@ const PhotoStrip = ({ photos, selectedStickers, showDownload = true }: PhotoStri
           ctx.strokeStyle = "#f0f0f0";
           ctx.lineWidth = 2;
           ctx.strokeRect(x, y, drawWidth, drawHeight);
-          
-          // Draw stickers for this photo
-          const photoStickers = selectedStickers[`photo${i + 1}` as keyof typeof selectedStickers] || [];
-          for (const sticker of photoStickers) {
-            try {
-              const stickerImg = await loadImage(sticker.src);
-              
-              // Calculate proper sticker placement
-              const stickerSize = 80; // Base size
-              
-              // Set sticker position based on photo position
-              // Use more controlled positioning to avoid stickers going outside the image
-              const stickerX = Math.min(
-                Math.max(x + 20, x + Math.random() * (drawWidth - stickerSize - 40)),
-                x + drawWidth - stickerSize - 20
-              );
-              const stickerY = Math.min(
-                Math.max(y + 20, y + Math.random() * (drawHeight - stickerSize - 40)),
-                y + drawHeight - stickerSize - 20
-              );
-              
-              ctx.drawImage(stickerImg, stickerX, stickerY, stickerSize, stickerSize);
-            } catch (error) {
-              console.error("Error loading sticker:", error);
-            }
-          }
         }
       } catch (error) {
         console.error("Error loading photo:", error);
+      }
+    }
+    
+    // Draw all stickers AFTER photos so they can be placed around the edges
+    // Collect all stickers from different photos
+    const allStickers: StickerType[] = [
+      ...selectedStickers.photo1,
+      ...selectedStickers.photo2,
+      ...selectedStickers.photo3,
+      ...selectedStickers.photo4
+    ];
+    
+    // Calculate positions for stickers along the edges of the strip
+    const positions = [
+      // Left edge
+      { x: 20, y: 120 },
+      { x: 25, y: 250 },
+      { x: 15, y: 400 },
+      { x: 30, y: 550 },
+      { x: 20, y: 700 },
+      { x: 25, y: 850 },
+      
+      // Right edge
+      { x: STRIP_WIDTH - 100, y: 150 },
+      { x: STRIP_WIDTH - 90, y: 300 },
+      { x: STRIP_WIDTH - 110, y: 450 },
+      { x: STRIP_WIDTH - 95, y: 600 },
+      { x: STRIP_WIDTH - 100, y: 750 },
+      { x: STRIP_WIDTH - 90, y: 900 },
+      
+      // Top edge
+      { x: 150, y: 25 },
+      { x: 300, y: 30 },
+      { x: 450, y: 20 },
+      
+      // Bottom edge
+      { x: 200, y: STRIP_HEIGHT - 90 },
+      { x: 350, y: STRIP_HEIGHT - 85 },
+      { x: 450, y: STRIP_HEIGHT - 95 }
+    ];
+    
+    // Draw stickers around the edges
+    for (let i = 0; i < allStickers.length; i++) {
+      try {
+        const sticker = allStickers[i];
+        const stickerImg = await loadImage(sticker.src);
+        
+        // Get position from array, or generate random if no more predefined positions
+        const position = i < positions.length ? 
+          positions[i] : 
+          { 
+            x: Math.random() * (STRIP_WIDTH - 100) + 50,
+            y: Math.random() * (STRIP_HEIGHT - 100) + 50
+          };
+        
+        // Draw sticker at position with some random rotation for fun
+        const stickerSize = Math.random() * 30 + 60; // Size between 60 and 90
+        const rotation = Math.random() * 0.5 - 0.25; // Small rotation between -0.25 and 0.25 radians
+        
+        ctx.save();
+        ctx.translate(position.x + stickerSize/2, position.y + stickerSize/2);
+        ctx.rotate(rotation);
+        ctx.drawImage(stickerImg, -stickerSize/2, -stickerSize/2, stickerSize, stickerSize);
+        ctx.restore();
+      } catch (error) {
+        console.error("Error loading sticker:", error);
       }
     }
     
