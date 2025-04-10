@@ -108,7 +108,7 @@ const PhotoStrip = ({ photos, selectedStickers, showDownload = true }: PhotoStri
     // Add copyright
     ctx.font = "12px 'Poppins', sans-serif";
     ctx.textAlign = "right";
-    ctx.fillText("© 2025 AW", STRIP_WIDTH - 20, STRIP_HEIGHT - 10);
+    ctx.fillText("© 2025 AmmarBN", STRIP_WIDTH - 20, STRIP_HEIGHT - 10);
   };
   
   const downloadPhotoStrip = () => {
