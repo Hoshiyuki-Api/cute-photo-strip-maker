@@ -194,7 +194,7 @@ const PhotoStrip = ({ photos, selectedStickers, showDownload = true }: PhotoStri
     ctx.fillStyle = "black";
     ctx.font = "bold 24px 'Bubblegum Sans', cursive";
     ctx.textAlign = "center";
-    ctx.fillText("Picapica", STRIP_WIDTH / 2, STRIP_HEIGHT - 50);
+    ctx.fillText("YukiPhotobooth", STRIP_WIDTH / 2, STRIP_HEIGHT - 50);
     
     ctx.font = "16px 'Poppins', sans-serif";
     ctx.fillText(formattedDate, STRIP_WIDTH / 2, STRIP_HEIGHT - 25);
@@ -202,7 +202,7 @@ const PhotoStrip = ({ photos, selectedStickers, showDownload = true }: PhotoStri
     // Add copyright
     ctx.font = "12px 'Poppins', sans-serif";
     ctx.textAlign = "right";
-    ctx.fillText("© 2025 AmmarBN", STRIP_WIDTH - 20, STRIP_HEIGHT - 10);
+    ctx.fillText("© 2025 yukiphotobooth.my.id", STRIP_WIDTH - 20, STRIP_HEIGHT - 10);
   };
   
   const downloadPhotoStrip = () => {
