@@ -20,7 +20,7 @@ const Sticker = ({ sticker, className, onClick, selected }: StickerProps) => {
   return (
     <div 
       className={cn(
-        "cursor-pointer transition-all p-1 hover:scale-110",
+        "cursor-pointer transition-all p-2 hover:scale-110 bg-white rounded-md flex items-center justify-center",
         selected && "ring-2 ring-photobooth-pink rounded-md bg-photobooth-pink/20",
         className
       )}
@@ -31,7 +31,7 @@ const Sticker = ({ sticker, className, onClick, selected }: StickerProps) => {
         alt={sticker.alt} 
         width={sticker.width || 60} 
         height={sticker.height || 60}
-        className="object-contain"
+        className="object-contain w-full h-full"
       />
     </div>
   );

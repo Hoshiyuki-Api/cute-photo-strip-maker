@@ -18,22 +18,22 @@ const animalStickers: StickerType[] = [
   },
   {
     id: "cat2",
-    src: "/public/stickers/cat1.png",
+    src: "/stickers/cat1.png",
     alt: "Orange cat",
   },
   {
     id: "cat3",
-    src: "/public/stickers/cat2.png",
+    src: "/stickers/cat2.png",
     alt: "Gray cat",
   },
   {
     id: "dog1",
-    src: "/public/stickers/dog1.png",
+    src: "/stickers/dog1.png",
     alt: "Cute dog",
   },
   {
     id: "panda1",
-    src: "/public/stickers/panda.png",
+    src: "/stickers/panda.png",
     alt: "Panda",
   },
 ];
@@ -41,22 +41,22 @@ const animalStickers: StickerType[] = [
 const loveStickers: StickerType[] = [
   {
     id: "heart1",
-    src: "/public/stickers/heart1.png",
+    src: "/stickers/heart1.png",
     alt: "Pink heart",
   },
   {
     id: "heart2",
-    src: "/public/stickers/heart2.png",
+    src: "/stickers/heart2.png",
     alt: "Red heart",
   },
   {
     id: "stars1",
-    src: "/public/stickers/stars.png",
+    src: "/stickers/stars.png",
     alt: "Stars",
   },
   {
     id: "pawprint1",
-    src: "/public/stickers/pawprint.png",
+    src: "/stickers/pawprint.png",
     alt: "Paw print",
   },
 ];
@@ -85,8 +85,8 @@ const StickerSelector = ({ onSelect }: StickerSelectorProps) => {
         </TabsList>
         
         <TabsContent value="animals">
-          <ScrollArea className="h-40">
-            <div className="grid grid-cols-3 gap-3">
+          <ScrollArea className="h-44">
+            <div className="grid grid-cols-3 gap-4">
               {animalStickers.map((sticker) => (
                 <Sticker
                   key={sticker.id}
@@ -100,8 +100,8 @@ const StickerSelector = ({ onSelect }: StickerSelectorProps) => {
         </TabsContent>
         
         <TabsContent value="love">
-          <ScrollArea className="h-40">
-            <div className="grid grid-cols-3 gap-3">
+          <ScrollArea className="h-44">
+            <div className="grid grid-cols-3 gap-4">
               {loveStickers.map((sticker) => (
                 <Sticker
                   key={sticker.id}

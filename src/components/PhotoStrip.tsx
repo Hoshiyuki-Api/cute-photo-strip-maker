@@ -31,8 +31,9 @@ const PhotoStrip = ({ photos, selectedStickers, showDownload = true }: PhotoStri
     if (!ctx) return;
     
     const STRIP_WIDTH = 600;
-    const PHOTO_HEIGHT = 400;
-    const STRIP_HEIGHT = PHOTO_HEIGHT * 4 + 100; // Extra space for footer
+    const PHOTO_HEIGHT = 380; // Slightly smaller to allow for spacing
+    const SPACING = 15; // Spacing between photos
+    const STRIP_HEIGHT = (PHOTO_HEIGHT + SPACING) * 4 + 100; // Extra space for footer
     const MARGIN = 20;
     
     // Set canvas dimensions
@@ -66,10 +67,16 @@ const PhotoStrip = ({ photos, selectedStickers, showDownload = true }: PhotoStri
           
           // Center the image horizontally
           const x = (STRIP_WIDTH - drawWidth) / 2;
-          const y = i * PHOTO_HEIGHT + MARGIN * (i > 0 ? 1 : 0);
+          // Add spacing between photos
+          const y = i * (PHOTO_HEIGHT + SPACING) + MARGIN;
           
           // Draw the photo
           ctx.drawImage(img, x, y, drawWidth, drawHeight);
+          
+          // Draw border around photo for better separation
+          ctx.strokeStyle = "#f0f0f0";
+          ctx.lineWidth = 2;
+          ctx.strokeRect(x, y, drawWidth, drawHeight);
           
           // Draw stickers for this photo
           const photoStickers = selectedStickers[`photo${i + 1}` as keyof typeof selectedStickers] || [];
@@ -77,10 +84,19 @@ const PhotoStrip = ({ photos, selectedStickers, showDownload = true }: PhotoStri
             try {
               const stickerImg = await loadImage(sticker.src);
               
-              // Randomize position slightly within the photo area
+              // Calculate proper sticker placement
               const stickerSize = 80; // Base size
-              const stickerX = Math.random() * (drawWidth - stickerSize) + x;
-              const stickerY = Math.random() * (drawHeight - stickerSize) + y;
+              
+              // Set sticker position based on photo position
+              // Use more controlled positioning to avoid stickers going outside the image
+              const stickerX = Math.min(
+                Math.max(x + 20, x + Math.random() * (drawWidth - stickerSize - 40)),
+                x + drawWidth - stickerSize - 20
+              );
+              const stickerY = Math.min(
+                Math.max(y + 20, y + Math.random() * (drawHeight - stickerSize - 40)),
+                y + drawHeight - stickerSize - 20
+              );
               
               ctx.drawImage(stickerImg, stickerX, stickerY, stickerSize, stickerSize);
             } catch (error) {
