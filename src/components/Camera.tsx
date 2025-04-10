@@ -1,6 +1,6 @@
 
 import { useEffect, useRef, useState } from "react";
-import { Camera as CameraIcon, CameraOff, Loader2 } from "lucide-react";
+import { Camera as CameraIcon, CameraOff, Loader2, Timer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -15,6 +15,8 @@ const Camera = ({ onPhotoCapture }: CameraProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [flashActive, setFlashActive] = useState(false);
+  const [isCountingDown, setIsCountingDown] = useState(false);
+  const [countdown, setCountdown] = useState(4);
 
   const startCamera = async () => {
     setIsLoading(true);
@@ -52,6 +54,25 @@ const Camera = ({ onPhotoCapture }: CameraProps) => {
         videoRef.current.srcObject = null;
       }
     }
+  };
+
+  const startCountdown = () => {
+    if (!stream || isLoading || isCountingDown) return;
+    
+    setIsCountingDown(true);
+    setCountdown(4);
+    
+    const countdownInterval = setInterval(() => {
+      setCountdown((prevCount) => {
+        if (prevCount <= 1) {
+          clearInterval(countdownInterval);
+          capturePhoto();
+          setIsCountingDown(false);
+          return 0;
+        }
+        return prevCount - 1;
+      });
+    }, 1000);
   };
 
   const capturePhoto = () => {
@@ -120,6 +141,14 @@ const Camera = ({ onPhotoCapture }: CameraProps) => {
           className="w-full h-full object-cover"
         />
         
+        {isCountingDown && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="bg-black/60 text-white rounded-full w-24 h-24 flex items-center justify-center">
+              <span className="text-4xl font-bold">{countdown}</span>
+            </div>
+          </div>
+        )}
+        
         {flashActive && (
           <div className="absolute inset-0 bg-white animate-photo-flash" />
         )}
@@ -129,12 +158,12 @@ const Camera = ({ onPhotoCapture }: CameraProps) => {
       
       <div className="mt-2 flex justify-center">
         <Button 
-          onClick={capturePhoto}
-          disabled={!stream || isLoading}
+          onClick={startCountdown}
+          disabled={!stream || isLoading || isCountingDown}
           variant="secondary"
           className="rounded-full h-14 w-14 p-0 bg-white border-2 border-photobooth-pink hover:bg-photobooth-pink/20"
         >
-          <CameraIcon size={24} />
+          {isCountingDown ? <Timer size={24} /> : <CameraIcon size={24} />}
         </Button>
       </div>
     </div>

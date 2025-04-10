@@ -3,7 +3,7 @@ import { useState } from "react";
 import Sticker, { StickerType } from "./Sticker";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Heart, Paw, Cat, Dog, Star } from "lucide-react";
+import { Heart, PawPrint, Cat, Dog, Star } from "lucide-react";
 
 interface StickerSelectorProps {
   onSelect: (sticker: StickerType) => void;

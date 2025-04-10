@@ -1,2 +1,7 @@
 
-// Placeholder for stars.png
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="95" fill="#FFF8D9" />
+  <path d="M100,30 L110,60 L140,60 L115,80 L125,110 L100,90 L75,110 L85,80 L60,60 L90,60 Z" fill="#FFD700" />
+  <path d="M50,120 L55,135 L70,135 L58,145 L63,160 L50,150 L37,160 L42,145 L30,135 L45,135 Z" fill="#FFAA00" />
+  <path d="M150,120 L155,135 L170,135 L158,145 L163,160 L150,150 L137,160 L142,145 L130,135 L145,135 Z" fill="#FF8800" />
+</svg>

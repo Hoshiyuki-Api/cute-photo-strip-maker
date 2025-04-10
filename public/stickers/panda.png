@@ -1,2 +1,10 @@
 
-// Placeholder for panda.png
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="95" fill="white" />
+  <circle cx="65" cy="65" r="25" fill="black" />
+  <circle cx="135" cy="65" r="25" fill="black" />
+  <circle cx="75" cy="75" r="10" fill="white" />
+  <circle cx="125" cy="75" r="10" fill="white" />
+  <ellipse cx="100" cy="120" rx="20" ry="15" fill="black" />
+  <circle cx="100" cy="110" r="8" fill="white" />
+</svg>

@@ -1,2 +1,5 @@
 
-// Placeholder for heart2.png
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="95" fill="#FFD4E5" />
+  <path d="M100,160 C60,120 40,100 40,70 C40,45 60,35 75,35 C90,35 100,45 100,45 C100,45 110,35 125,35 C140,35 160,45 160,70 C160,100 140,120 100,160 Z" fill="#FF6B8B" />
+</svg>

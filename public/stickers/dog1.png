@@ -1,2 +1,12 @@
 
-// Placeholder for dog1.png
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="95" fill="#FFEBD6" />
+  <circle cx="75" cy="90" r="18" fill="white" />
+  <circle cx="75" cy="90" r="8" fill="black" />
+  <circle cx="125" cy="90" r="18" fill="white" />
+  <circle cx="125" cy="90" r="8" fill="black" />
+  <circle cx="100" cy="110" r="10" fill="#825D35" />
+  <path d="M70 140 Q100 160 130 140" stroke="black" stroke-width="3" fill="none" />
+  <ellipse cx="60" cy="50" rx="25" ry="20" fill="#FFDDB7" />
+  <ellipse cx="140" cy="50" rx="25" ry="20" fill="#FFDDB7" />
+</svg>

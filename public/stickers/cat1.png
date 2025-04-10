@@ -1,2 +1,12 @@
 
-// Placeholder for cat1.png
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="95" fill="#FFD6E5" />
+  <circle cx="75" cy="80" r="18" fill="white" />
+  <circle cx="75" cy="80" r="8" fill="black" />
+  <circle cx="125" cy="80" r="18" fill="white" />
+  <circle cx="125" cy="80" r="8" fill="black" />
+  <circle cx="100" cy="100" r="8" fill="pink" />
+  <path d="M70 120 Q100 145 130 120" stroke="black" stroke-width="3" fill="none" />
+  <path d="M60 40 L80 60 Q85 65 80 70" stroke="black" stroke-width="3" fill="none" />
+  <path d="M140 40 L120 60 Q115 65 120 70" stroke="black" stroke-width="3" fill="none" />
+</svg>

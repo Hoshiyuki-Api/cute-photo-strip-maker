@@ -1,2 +1,13 @@
 
-// Placeholder for cat2.png
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="95" fill="#E5E0FF" />
+  <polygon points="65,50 85,80 45,80" fill="#8B7EB1" />
+  <polygon points="135,50 155,80 115,80" fill="#8B7EB1" />
+  <circle cx="70" cy="100" r="15" fill="white" />
+  <circle cx="70" cy="100" r="7" fill="black" />
+  <circle cx="130" cy="100" r="15" fill="white" />
+  <circle cx="130" cy="100" r="7" fill="black" />
+  <circle cx="100" cy="120" r="7" fill="pink" />
+  <path d="M80 140 Q100 150 120 140" stroke="black" stroke-width="2" fill="none" />
+  <path d="M85 95 Q100 80 115 95" stroke="#8B7EB1" stroke-width="2" fill="none" />
+</svg>

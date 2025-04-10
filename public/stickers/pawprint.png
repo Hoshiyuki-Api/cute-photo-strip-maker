@@ -1,2 +1,9 @@
 
-// Placeholder for pawprint.png
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="95" fill="#E5F9FF" />
+  <ellipse cx="100" cy="130" rx="35" ry="30" fill="#B197FC" />
+  <ellipse cx="70" cy="80" rx="20" ry="25" fill="#B197FC" />
+  <ellipse cx="130" cy="80" rx="20" ry="25" fill="#B197FC" />
+  <ellipse cx="60" cy="110" rx="18" ry="20" fill="#B197FC" />
+  <ellipse cx="140" cy="110" rx="18" ry="20" fill="#B197FC" />
+</svg>
