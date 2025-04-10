@@ -1,3 +1,6 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Bubblegum+Sans&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,17 +16,17 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 352 97% 91%;
+    --primary-foreground: 355 55% 35%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 210 85% 92%;
+    --secondary-foreground: 210 50% 40%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 52 100% 88%;
+    --accent-foreground: 45 60% 35%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
@@ -97,5 +100,15 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Bubblegum Sans', cursive;
+  }
+
+  .photo-strip {
+    border: 15px solid white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   }
 }

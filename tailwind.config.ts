@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,12 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				photobooth: {
+					pink: '#FFDEE2',
+					blue: '#D3E4FD',
+					yellow: '#FDF6C3',
+					peach: '#FDE1D3',
 				}
 			},
 			borderRadius: {
@@ -84,11 +91,17 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'photo-flash': {
+					'0%': { opacity: '0' },
+					'50%': { opacity: '1' },
+					'100%': { opacity: '0' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'photo-flash': 'photo-flash 0.5s ease-out'
 			}
 		}
 	},
