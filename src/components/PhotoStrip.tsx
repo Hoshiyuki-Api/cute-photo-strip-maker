@@ -25,11 +25,12 @@ const PhotoStrip = ({ photos, selectedFrame, showDownload = true }: PhotoStripPr
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     
-    const STRIP_WIDTH = 600;
-    const PHOTO_HEIGHT = 380; // Slightly smaller to allow for spacing
-    const SPACING = 20; // Increased spacing between photos
-    const STRIP_HEIGHT = (PHOTO_HEIGHT + SPACING) * 4 + 100; // Extra space for footer
-    const MARGIN = 20;
+    // Set dimensions for 9:16 aspect ratio
+    const STRIP_WIDTH = 540;
+    const STRIP_HEIGHT = 960; // 9:16 ratio (540 * 16/9)
+    const PHOTO_HEIGHT = 200; // Smaller height for each photo to fit in 9:16 ratio
+    const SPACING = 15; // Spacing between photos
+    const MARGIN = 25; // Margin at the top
     
     // Set canvas dimensions
     canvas.width = STRIP_WIDTH;
@@ -40,7 +41,6 @@ const PhotoStrip = ({ photos, selectedFrame, showDownload = true }: PhotoStripPr
     ctx.fillRect(0, 0, STRIP_WIDTH, STRIP_HEIGHT);
     
     // Add decorative border around entire strip based on selected frame
-    // Handle both hex colors and gradients
     if (selectedFrame.borderColor.startsWith('linear')) {
       // Create gradient
       const gradient = ctx.createLinearGradient(0, 0, STRIP_WIDTH, 0);
@@ -62,7 +62,6 @@ const PhotoStrip = ({ photos, selectedFrame, showDownload = true }: PhotoStripPr
     ctx.strokeRect(10, 10, STRIP_WIDTH - 20, STRIP_HEIGHT - 20);
     
     // Add some decorative elements to the corners based on selected frame
-    const cornerSize = 40;
     ctx.strokeStyle = selectedFrame.cornerStyle;
     
     // Top left corner
@@ -104,21 +103,26 @@ const PhotoStrip = ({ photos, selectedFrame, showDownload = true }: PhotoStripPr
       });
     };
 
-    // Draw photos with more spacing
+    // Calculate vertical positioning for the 9:16 layout
+    // Photos are stacked with even spacing through the strip
+    const totalPhotosHeight = (PHOTO_HEIGHT * photos.length) + (SPACING * (photos.length - 1));
+    const startY = (STRIP_HEIGHT - totalPhotosHeight) / 2; // Center photos vertically
+    
+    // Draw photos with vertical stacking
     for (let i = 0; i < Math.min(photos.length, 4); i++) {
       try {
         if (photos[i]) {
           const img = await loadImage(photos[i]);
           
-          // Calculate aspect ratio to fit the width of the strip
+          // Calculate aspect ratio to fit the width of the strip but maintain photo aspect
           const aspectRatio = img.width / img.height;
           const drawHeight = PHOTO_HEIGHT;
           const drawWidth = drawHeight * aspectRatio;
           
           // Center the image horizontally
           const x = (STRIP_WIDTH - drawWidth) / 2;
-          // Add more spacing between photos
-          const y = i * (PHOTO_HEIGHT + SPACING) + MARGIN;
+          // Stack photos vertically with even spacing
+          const y = startY + (i * (PHOTO_HEIGHT + SPACING));
           
           // Draw the photo
           ctx.drawImage(img, x, y, drawWidth, drawHeight);
@@ -166,22 +170,23 @@ const PhotoStrip = ({ photos, selectedFrame, showDownload = true }: PhotoStripPr
       }
     }
     
-    // Add footer with date
+    // Add title at the top
+    ctx.fillStyle = "black";
+    ctx.font = "bold 32px 'Bubblegum Sans', cursive";
+    ctx.textAlign = "center";
+    ctx.fillText("YukiPhotobooth", STRIP_WIDTH / 2, MARGIN + 30);
+    
+    // Add footer with date at the bottom
     const currentDate = new Date();
     const formattedDate = `${currentDate.toLocaleDateString()} ${currentDate.toLocaleTimeString()}`;
     
-    ctx.fillStyle = "black";
-    ctx.font = "bold 24px 'Bubblegum Sans', cursive";
-    ctx.textAlign = "center";
-    ctx.fillText("YukiPhotobooth", STRIP_WIDTH / 2, STRIP_HEIGHT - 50);
-    
     ctx.font = "16px 'Poppins', sans-serif";
-    ctx.fillText(formattedDate, STRIP_WIDTH / 2, STRIP_HEIGHT - 25);
+    ctx.fillText(formattedDate, STRIP_WIDTH / 2, STRIP_HEIGHT - 50);
     
     // Add copyright
     ctx.font = "12px 'Poppins', sans-serif";
     ctx.textAlign = "right";
-    ctx.fillText("© 2025 AmmarBN", STRIP_WIDTH - 20, STRIP_HEIGHT - 10);
+    ctx.fillText("© 2025 AmmarBN", STRIP_WIDTH - 20, STRIP_HEIGHT - 20);
   };
   
   const downloadPhotoStrip = () => {
@@ -197,7 +202,7 @@ const PhotoStrip = ({ photos, selectedFrame, showDownload = true }: PhotoStripPr
   return (
     <div className="flex flex-col items-center">
       <div className="photo-strip rounded-lg overflow-hidden">
-        <canvas ref={canvasRef} className="w-full h-auto" />
+        <canvas ref={canvasRef} className="w-full h-auto max-h-[80vh]" />
       </div>
       
       {showDownload && photos.length > 0 && (
