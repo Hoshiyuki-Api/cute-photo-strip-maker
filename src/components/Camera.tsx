@@ -4,6 +4,7 @@ import { Camera as CameraIcon, CameraOff, Loader2, Timer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface CameraProps {
   onPhotoCapture: (photoData: string) => void;
@@ -15,6 +16,7 @@ const Camera = ({ onPhotoCapture }: CameraProps) => {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const [permissionError, setPermissionError] = useState<string | null>(null);
   const [flashActive, setFlashActive] = useState(false);
   const [isCountingDown, setIsCountingDown] = useState(false);
   const [countdown, setCountdown] = useState(4);
@@ -26,6 +28,8 @@ const Camera = ({ onPhotoCapture }: CameraProps) => {
 
   const startCamera = async () => {
     setIsLoading(true);
+    setPermissionError(null);
+    
     try {
       // Request higher resolution for better quality
       const constraints = {
@@ -50,10 +54,22 @@ const Camera = ({ onPhotoCapture }: CameraProps) => {
         setStream(mediaStream);
         setHasPermission(true);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error accessing camera:", error);
       setHasPermission(false);
-      toast.error("Tidak bisa mengakses kamera. Pastikan Anda memberikan izin.");
+      
+      // More detailed error handling
+      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+        setPermissionError("Izin kamera ditolak. Silakan izinkan akses kamera di pengaturan browser Anda.");
+      } else if (error.name === 'NotFoundError') {
+        setPermissionError("Tidak ada kamera yang tersedia pada perangkat ini.");
+      } else if (error.name === 'NotReadableError' || error.name === 'AbortError') {
+        setPermissionError("Kamera sedang digunakan aplikasi lain. Silakan tutup aplikasi tersebut dan coba lagi.");
+      } else {
+        setPermissionError(`Terjadi masalah saat mengakses kamera: ${error.message || "Error tidak diketahui"}`);
+      }
+      
+      toast.error("Tidak bisa mengakses kamera. Cek konsol untuk detail.");
     } finally {
       setIsLoading(false);
     }
@@ -69,6 +85,13 @@ const Camera = ({ onPhotoCapture }: CameraProps) => {
         videoRef.current.srcObject = null;
       }
     }
+  };
+
+  const retryCamera = () => {
+    stopCamera();
+    setHasPermission(null);
+    setPermissionError(null);
+    setTimeout(startCamera, 500); // Add slight delay before retry
   };
 
   const startCountdown = () => {
@@ -139,8 +162,16 @@ const Camera = ({ onPhotoCapture }: CameraProps) => {
           <div className="absolute inset-0 flex items-center justify-center bg-gray-900 text-white text-center p-4">
             <div>
               <CameraOff size={48} className="mx-auto mb-4 text-red-500" />
-              <p>Akses kamera ditolak</p>
+              <p>{permissionError || "Akses kamera ditolak"}</p>
               <p className="text-sm mt-2 text-gray-400">Mohon berikan izin kamera di pengaturan browser Anda</p>
+              <Button 
+                onClick={retryCamera} 
+                variant="secondary" 
+                className="mt-4"
+                size="sm"
+              >
+                Coba Lagi
+              </Button>
             </div>
           </div>
         )}
@@ -175,16 +206,18 @@ const Camera = ({ onPhotoCapture }: CameraProps) => {
       
       <canvas ref={canvasRef} className="hidden" />
       
-      <div className="mt-2 flex justify-center">
-        <Button 
-          onClick={startCountdown}
-          disabled={!stream || isLoading || isCountingDown}
-          variant="secondary"
-          className="rounded-full h-14 w-14 p-0 bg-white border-2 border-photobooth-pink hover:bg-photobooth-pink/20"
-        >
-          {isCountingDown ? <Timer size={24} /> : <CameraIcon size={24} />}
-        </Button>
-      </div>
+      {hasPermission === true && (
+        <div className="mt-2 flex justify-center">
+          <Button 
+            onClick={startCountdown}
+            disabled={!stream || isLoading || isCountingDown}
+            variant="secondary"
+            className="rounded-full h-14 w-14 p-0 bg-white border-2 border-photobooth-pink hover:bg-photobooth-pink/20"
+          >
+            {isCountingDown ? <Timer size={24} /> : <CameraIcon size={24} />}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
