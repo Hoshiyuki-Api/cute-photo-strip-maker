@@ -148,6 +148,38 @@ const Camera = ({ onPhotoCapture }: CameraProps) => {
     }, 1000)
   }
 
+  // Add a function to verify the photo dimensions
+  const verifyPhotoDimensions = (dataUrl: string) => {
+    return new Promise<string>((resolve) => {
+      const img = new Image()
+      img.onload = () => {
+        console.log("Loaded photo dimensions:", img.width, "x", img.height)
+
+        // If dimensions don't match, resize on a temporary canvas
+        if (img.width !== cameraWidth || img.height !== cameraHeight) {
+          console.log("Resizing photo to match exact dimensions")
+          const tempCanvas = document.createElement("canvas")
+          tempCanvas.width = cameraWidth
+          tempCanvas.height = cameraHeight
+          const ctx = tempCanvas.getContext("2d")
+
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, cameraWidth, cameraHeight)
+            const resizedDataUrl = tempCanvas.toDataURL("image/jpeg", 0.95)
+            resolve(resizedDataUrl)
+          } else {
+            resolve(dataUrl) // Fallback to original if context creation fails
+          }
+        } else {
+          resolve(dataUrl) // Already correct dimensions
+        }
+      }
+      img.crossOrigin = "anonymous"
+      img.src = dataUrl
+    })
+  }
+
+  // Update capturePhoto function to use the verification
   const capturePhoto = () => {
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current
@@ -155,7 +187,7 @@ const Camera = ({ onPhotoCapture }: CameraProps) => {
       const context = canvas.getContext("2d")
 
       if (context) {
-        // Set canvas size to exactly 1280x720
+        // Always set canvas to exactly 1280x720 regardless of video dimensions
         canvas.width = cameraWidth
         canvas.height = cameraHeight
 
@@ -165,13 +197,52 @@ const Camera = ({ onPhotoCapture }: CameraProps) => {
         setFlashActive(true)
         setTimeout(() => setFlashActive(false), 500)
 
-        // Draw video frame to canvas at 1280x720 resolution
-        context.drawImage(video, 0, 0, cameraWidth, cameraHeight)
+        // Get the video dimensions
+        const videoWidth = video.videoWidth
+        const videoHeight = video.videoHeight
+        console.log("Actual video dimensions:", videoWidth, "x", videoHeight)
+
+        // Calculate scaling and positioning to maintain aspect ratio
+        let sx = 0,
+          sy = 0,
+          sWidth = videoWidth,
+          sHeight = videoHeight
+
+        // If video aspect ratio doesn't match 16:9, crop it to fit
+        const targetAspectRatio = cameraWidth / cameraHeight
+        const videoAspectRatio = videoWidth / videoHeight
+
+        if (videoAspectRatio > targetAspectRatio) {
+          // Video is wider than target, crop the sides
+          sWidth = videoHeight * targetAspectRatio
+          sx = (videoWidth - sWidth) / 2
+        } else if (videoAspectRatio < targetAspectRatio) {
+          // Video is taller than target, crop top/bottom
+          sHeight = videoWidth / targetAspectRatio
+          sy = (videoHeight - sHeight) / 2
+        }
+
+        // Draw the video frame to canvas, cropping if necessary to maintain aspect ratio
+        context.drawImage(
+          video,
+          sx,
+          sy,
+          sWidth,
+          sHeight, // Source rectangle (cropping)
+          0,
+          0,
+          cameraWidth,
+          cameraHeight, // Destination rectangle (1280x720)
+        )
 
         // Convert canvas to high quality JPEG
-        const photoData = canvas.toDataURL("image/jpeg", 0.95) // Higher quality
-        console.log("Photo captured with dimensions:", canvas.width, "x", canvas.height)
-        onPhotoCapture(photoData)
+        const photoData = canvas.toDataURL("image/jpeg", 0.95)
+
+        // Verify and ensure the photo has exactly 1280x720 dimensions
+        verifyPhotoDimensions(photoData).then((finalPhotoData) => {
+          console.log("Final photo captured with dimensions:", cameraWidth, "x", cameraHeight)
+          onPhotoCapture(finalPhotoData)
+        })
       }
     }
   }
@@ -215,7 +286,11 @@ const Camera = ({ onPhotoCapture }: CameraProps) => {
           playsInline
           muted
           className="w-full h-full object-cover"
-          style={{ width: "100%", height: "auto", aspectRatio: "16/9" }}
+          style={{
+            aspectRatio: `${cameraWidth}/${cameraHeight}`,
+            maxWidth: "100%",
+            maxHeight: "100%",
+          }}
         />
 
         {isCountingDown && (
