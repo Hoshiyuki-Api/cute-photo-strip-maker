@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Camera as CameraIcon, CameraOff, Loader2, Timer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CameraProps {
   onPhotoCapture: (photoData: string) => void;
@@ -17,21 +18,35 @@ const Camera = ({ onPhotoCapture }: CameraProps) => {
   const [flashActive, setFlashActive] = useState(false);
   const [isCountingDown, setIsCountingDown] = useState(false);
   const [countdown, setCountdown] = useState(4);
+  const isMobile = useIsMobile();
+  
+  // Set higher resolution for better quality photos
+  const idealWidth = isMobile ? 1280 : 1920;
+  const idealHeight = isMobile ? 720 : 1080;
 
   const startCamera = async () => {
     setIsLoading(true);
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
+      // Request higher resolution for better quality
+      const constraints = {
         video: {
           facingMode: "user",
-          width: { ideal: 480 },
-          height: { ideal: 640 }
+          width: { ideal: idealWidth },
+          height: { ideal: idealHeight },
+          frameRate: { ideal: 30 }
         },
         audio: false,
-      });
+      };
+      
+      console.log("Camera constraints:", constraints);
+      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
       
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
+        // Log the actual track settings to debug resolution issues
+        const videoTrack = mediaStream.getVideoTracks()[0];
+        console.log("Camera track settings:", videoTrack.getSettings());
+        
         setStream(mediaStream);
         setHasPermission(true);
       }
@@ -77,27 +92,31 @@ const Camera = ({ onPhotoCapture }: CameraProps) => {
 
   const capturePhoto = () => {
     if (videoRef.current && canvasRef.current) {
-      const context = canvasRef.current.getContext("2d");
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const context = canvas.getContext("2d");
+      
       if (context) {
-        // Set canvas dimensions to match video
-        canvasRef.current.width = videoRef.current.videoWidth;
-        canvasRef.current.height = videoRef.current.videoHeight;
+        // Get the actual video dimensions from the video element
+        const videoWidth = video.videoWidth;
+        const videoHeight = video.videoHeight;
+        
+        console.log("Video dimensions:", videoWidth, "x", videoHeight);
+        
+        // Set canvas size to match video resolution for maximum quality
+        canvas.width = videoWidth;
+        canvas.height = videoHeight;
         
         // Flash effect
         setFlashActive(true);
         setTimeout(() => setFlashActive(false), 500);
         
-        // Draw video frame to canvas
-        context.drawImage(
-          videoRef.current,
-          0,
-          0,
-          videoRef.current.videoWidth,
-          videoRef.current.videoHeight
-        );
+        // Draw video frame to canvas at full resolution
+        context.drawImage(video, 0, 0, videoWidth, videoHeight);
         
-        // Convert canvas to data URL and pass to parent
-        const photoData = canvasRef.current.toDataURL("image/jpeg");
+        // Convert canvas to high quality JPEG
+        const photoData = canvas.toDataURL("image/jpeg", 0.95); // Higher quality
+        console.log("Photo captured with dimensions:", canvas.width, "x", canvas.height);
         onPhotoCapture(photoData);
       }
     }
@@ -137,7 +156,7 @@ const Camera = ({ onPhotoCapture }: CameraProps) => {
           ref={videoRef} 
           autoPlay 
           playsInline 
-          muted 
+          muted
           className="w-full h-full object-cover"
         />
         

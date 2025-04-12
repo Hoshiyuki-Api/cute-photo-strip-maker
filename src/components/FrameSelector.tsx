@@ -3,6 +3,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export interface FrameType {
   id: string;
@@ -56,6 +57,8 @@ interface FrameSelectorProps {
 }
 
 const FrameSelector = ({ selectedFrame, onSelect }: FrameSelectorProps) => {
+  const isMobile = useIsMobile();
+  
   return (
     <Card className="shadow-md">
       <CardContent className="pt-6">
@@ -69,7 +72,7 @@ const FrameSelector = ({ selectedFrame, onSelect }: FrameSelectorProps) => {
               if (frame) onSelect(frame);
             }}
           >
-            <div className="grid grid-cols-2 gap-3">
+            <div className={`grid ${isMobile ? 'grid-cols-3' : 'grid-cols-2'} gap-3`}>
               {frames.map((frame) => (
                 <div key={frame.id} className="relative">
                   <RadioGroupItem
@@ -84,7 +87,7 @@ const FrameSelector = ({ selectedFrame, onSelect }: FrameSelectorProps) => {
                     }`}
                   >
                     <div 
-                      className="w-full h-16 rounded-md flex items-center justify-center" 
+                      className="w-full h-12 rounded-md flex items-center justify-center" 
                       style={{ 
                         background: typeof frame.borderColor === 'string' && frame.borderColor.startsWith('#') ? frame.borderColor : 'transparent',
                         backgroundImage: frame.borderColor.startsWith('linear') ? frame.borderColor : 'none'
@@ -92,7 +95,7 @@ const FrameSelector = ({ selectedFrame, onSelect }: FrameSelectorProps) => {
                     >
                       <div className="w-3/4 h-3/4 bg-white rounded"></div>
                     </div>
-                    <span className="text-xs text-center">{frame.name}</span>
+                    <span className="text-xs text-center truncate w-full">{frame.name}</span>
                   </Label>
                 </div>
               ))}
