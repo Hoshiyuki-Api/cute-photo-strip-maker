@@ -1,4 +1,3 @@
-
 import { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
@@ -25,24 +24,27 @@ const PhotoStrip = ({ photos, selectedFrame, showDownload = true }: PhotoStripPr
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     
-    // Set dimensions for 9:16 aspect ratio
-    const STRIP_WIDTH = 540;
-    const STRIP_HEIGHT = 960; // 9:16 ratio (540 * 16/9)
-    const PHOTO_HEIGHT = 200; // Smaller height for each photo to fit in 9:16 ratio
-    const SPACING = 15; // Spacing between photos
-    const MARGIN = 25; // Margin at the top
+    // Set high-resolution dimensions for 9:16 aspect ratio
+    const STRIP_WIDTH = 1080; // Doubled resolution
+    const STRIP_HEIGHT = 1920; // Doubled resolution, 9:16 ratio
+    const PHOTO_HEIGHT = 400; // Increased photo height
+    const SPACING = 30; // Increased spacing
+    const MARGIN = 50; // Increased margin
     
-    // Set canvas dimensions
+    // Set canvas dimensions and scale
     canvas.width = STRIP_WIDTH;
     canvas.height = STRIP_HEIGHT;
+    
+    // High-quality rendering
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     
     // Fill background
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, STRIP_WIDTH, STRIP_HEIGHT);
     
-    // Add decorative border around entire strip based on selected frame
+    // Add decorative border with gradient or color
     if (selectedFrame.borderColor.startsWith('linear')) {
-      // Create gradient
       const gradient = ctx.createLinearGradient(0, 0, STRIP_WIDTH, 0);
       const colors = selectedFrame.borderColor
         .replace('linear-gradient(90deg, ', '')
@@ -58,84 +60,82 @@ const PhotoStrip = ({ photos, selectedFrame, showDownload = true }: PhotoStripPr
       ctx.strokeStyle = selectedFrame.borderColor; 
     }
     
-    ctx.lineWidth = 8;
-    ctx.strokeRect(10, 10, STRIP_WIDTH - 20, STRIP_HEIGHT - 20);
+    ctx.lineWidth = 16; // Increased border width
+    ctx.strokeRect(20, 20, STRIP_WIDTH - 40, STRIP_HEIGHT - 40);
     
-    // Add some decorative elements to the corners based on selected frame
+    // Corner decorations
     ctx.strokeStyle = selectedFrame.cornerStyle;
+    ctx.lineWidth = 12;
     
     // Top left corner
     ctx.beginPath();
-    ctx.moveTo(10, 30);
-    ctx.lineTo(10, 10);
-    ctx.lineTo(30, 10);
-    ctx.lineWidth = 8;
+    ctx.moveTo(20, 60);
+    ctx.lineTo(20, 20);
+    ctx.lineTo(60, 20);
     ctx.stroke();
     
     // Top right corner
     ctx.beginPath();
-    ctx.moveTo(STRIP_WIDTH - 30, 10);
-    ctx.lineTo(STRIP_WIDTH - 10, 10);
-    ctx.lineTo(STRIP_WIDTH - 10, 30);
+    ctx.moveTo(STRIP_WIDTH - 60, 20);
+    ctx.lineTo(STRIP_WIDTH - 20, 20);
+    ctx.lineTo(STRIP_WIDTH - 20, 60);
     ctx.stroke();
     
     // Bottom left corner
     ctx.beginPath();
-    ctx.moveTo(10, STRIP_HEIGHT - 30);
-    ctx.lineTo(10, STRIP_HEIGHT - 10);
-    ctx.lineTo(30, STRIP_HEIGHT - 10);
+    ctx.moveTo(20, STRIP_HEIGHT - 60);
+    ctx.lineTo(20, STRIP_HEIGHT - 20);
+    ctx.lineTo(60, STRIP_HEIGHT - 20);
     ctx.stroke();
     
     // Bottom right corner
     ctx.beginPath();
-    ctx.moveTo(STRIP_WIDTH - 30, STRIP_HEIGHT - 10);
-    ctx.lineTo(STRIP_WIDTH - 10, STRIP_HEIGHT - 10);
-    ctx.lineTo(STRIP_WIDTH - 10, STRIP_HEIGHT - 30);
+    ctx.moveTo(STRIP_WIDTH - 60, STRIP_HEIGHT - 20);
+    ctx.lineTo(STRIP_WIDTH - 20, STRIP_HEIGHT - 20);
+    ctx.lineTo(STRIP_WIDTH - 20, STRIP_HEIGHT - 60);
     ctx.stroke();
     
-    // Preload all images before drawing
+    // Preload images with high-quality image loading
     const loadImage = (src: string): Promise<HTMLImageElement> => {
       return new Promise((resolve, reject) => {
         const img = new Image();
         img.onload = () => resolve(img);
         img.onerror = reject;
+        img.crossOrigin = 'anonymous'; // Enable CORS for better image loading
         img.src = src;
       });
     };
 
-    // Calculate vertical positioning for the 9:16 layout
-    // Photos are stacked with even spacing through the strip
+    // Center photos vertically with more precise calculation
     const totalPhotosHeight = (PHOTO_HEIGHT * photos.length) + (SPACING * (photos.length - 1));
-    const startY = (STRIP_HEIGHT - totalPhotosHeight) / 2; // Center photos vertically
+    const startY = (STRIP_HEIGHT - totalPhotosHeight) / 2;
     
-    // Draw photos with vertical stacking
+    // Draw photos with enhanced quality
     for (let i = 0; i < Math.min(photos.length, 4); i++) {
       try {
         if (photos[i]) {
           const img = await loadImage(photos[i]);
           
-          // Calculate aspect ratio to fit the width of the strip but maintain photo aspect
+          // Maintain aspect ratio with higher quality
           const aspectRatio = img.width / img.height;
           const drawHeight = PHOTO_HEIGHT;
           const drawWidth = drawHeight * aspectRatio;
           
-          // Center the image horizontally
           const x = (STRIP_WIDTH - drawWidth) / 2;
-          // Stack photos vertically with even spacing
           const y = startY + (i * (PHOTO_HEIGHT + SPACING));
           
-          // Draw the photo
+          // High-quality image drawing
           ctx.drawImage(img, x, y, drawWidth, drawHeight);
           
-          // Draw border around photo for better separation
-          ctx.strokeStyle = "#f0f0f0";
-          ctx.lineWidth = 2;
+          // Refined photo border
+          ctx.strokeStyle = "#e0e0e0";
+          ctx.lineWidth = 4;
           ctx.strokeRect(x, y, drawWidth, drawHeight);
           
-          // Add small decorative elements on photo corners matching the frame style
-          const cornerDecorSize = 15;
+          // Photo corner decorations
+          const cornerDecorSize = 30;
           ctx.strokeStyle = selectedFrame.cornerStyle;
-          ctx.lineWidth = 3;
+          ctx.lineWidth = 6;
           
           // Top left
           ctx.beginPath();
@@ -170,31 +170,30 @@ const PhotoStrip = ({ photos, selectedFrame, showDownload = true }: PhotoStripPr
       }
     }
     
-    // Add title at the top
+    // Enhanced title and text
     ctx.fillStyle = "black";
-    ctx.font = "bold 32px 'Bubblegum Sans', cursive";
+    ctx.font = "bold 64px 'Bubblegum Sans', cursive";
     ctx.textAlign = "center";
-    ctx.fillText("YukiPhotobooth", STRIP_WIDTH / 2, MARGIN + 30);
+    ctx.fillText("YukiPhotobooth", STRIP_WIDTH / 2, MARGIN + 60);
     
-    // Add footer with date at the bottom
+    // Date and copyright with improved typography
     const currentDate = new Date();
     const formattedDate = `${currentDate.toLocaleDateString()} ${currentDate.toLocaleTimeString()}`;
     
-    ctx.font = "16px 'Poppins', sans-serif";
-    ctx.fillText(formattedDate, STRIP_WIDTH / 2, STRIP_HEIGHT - 50);
+    ctx.font = "32px 'Poppins', sans-serif";
+    ctx.fillText(formattedDate, STRIP_WIDTH / 2, STRIP_HEIGHT - 100);
     
-    // Add copyright
-    ctx.font = "12px 'Poppins', sans-serif";
+    ctx.font = "24px 'Poppins', sans-serif";
     ctx.textAlign = "right";
-    ctx.fillText("© 2025 AmmarBN", STRIP_WIDTH - 20, STRIP_HEIGHT - 20);
+    ctx.fillText("© 2025 AmmarBN", STRIP_WIDTH - 40, STRIP_HEIGHT - 40);
   };
   
   const downloadPhotoStrip = () => {
     if (!canvasRef.current) return;
     
     const link = document.createElement('a');
-    link.download = `photobooth-${new Date().getTime()}.jpg`;
-    link.href = canvasRef.current.toDataURL('image/jpeg', 0.8);
+    link.download = `photobooth-${new Date().getTime()}.png`; // Change to PNG for better quality
+    link.href = canvasRef.current.toDataURL('image/png'); // Use PNG instead of JPEG
     link.click();
     toast.success("Foto berhasil diunduh!");
   };
