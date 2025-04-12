@@ -174,18 +174,18 @@ const PhotoStrip = ({ photos, selectedFrame, showDownload = true }: PhotoStripPr
     ctx.fillStyle = "black";
     ctx.font = "bold 64px 'Bubblegum Sans', cursive";
     ctx.textAlign = "center";
-    ctx.fillText("YukiPhotobooth", STRIP_WIDTH / 2, MARGIN + 60);
+    ctx.fillText("Cute Photobooth", STRIP_WIDTH / 2, MARGIN + 60);
     
     // Date and copyright with improved typography
     const currentDate = new Date();
-    const formattedDate = `${currentDate.toLocaleDateString()} ${currentDate.toLocaleTimeString()}`;
+    const formattedDate = `${currentDate.toLocaleDateString()} photobooth.ammarbn.my.id`;
     
     ctx.font = "32px 'Poppins', sans-serif";
     ctx.fillText(formattedDate, STRIP_WIDTH / 2, STRIP_HEIGHT - 100);
     
     ctx.font = "24px 'Poppins', sans-serif";
     ctx.textAlign = "right";
-    ctx.fillText("© 2025 AmmarBN", STRIP_WIDTH - 40, STRIP_HEIGHT - 40);
+    ctx.fillText("© 2025 Cute Photobooth", STRIP_WIDTH - 40, STRIP_HEIGHT - 40);
   };
   
   const downloadPhotoStrip = () => {
